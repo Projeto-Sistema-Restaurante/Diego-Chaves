@@ -70,29 +70,32 @@ if __name__ == "__main__":
         _quantity.append(data[i][2])  
 
 
-    controller = True
-    while controller:
+    while True:
         product = input("Produto: ")
         output_quantity = int(input("Quantidade: "))
 
-        if unidecode.unidecode(product.lower()) not in _product:
-            print(f"{product} não existe no estoque, tente registrar a saída novamente!")
+        format_product = unidecode.unidecode(product.lower())
+
+        if format_product not in _product:
+            print(f"{product} não existe no estoque, tente registrar a saída novamente! \n")
             continue
         
         sql_update = (
             f'UPDATE {TABLE_NAME} '
             f'SET quantity = (quantity - {output_quantity} )'
-            f'WHERE product = "{unidecode.unidecode(product.lower())}"'
+            f'WHERE product = "{format_product}"'
         )
 
         cursor.execute(sql_update)
         connection.commit()
 
-        resp = input("Deseja registar mais itens de saída [S/N]? ")
-        if resp.upper() == "N":
-            controller = False
-        
+        resp = input("Deseja registar mais itens de saída [S/N]?")
+
         print()
+        
+        if resp.upper() == "N":
+            break
+
 
 
     data = getData()
