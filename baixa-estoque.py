@@ -11,6 +11,7 @@ TABLE_NAME = 'estoque'
 connection = sqlite3.connect(DB_FILE)
 cursor = connection.cursor()
 
+# Clear table for work
 sql = (
     f'DELETE FROM {TABLE_NAME}'
 )
