@@ -61,14 +61,17 @@ if __name__ == "__main__":
         response = cursor.fetchall()
         return response
     
+    def verifyQuantity(quantity):
+        cursor.execute(f'SELECT quantity FROM {TABLE_NAME} WHERE product = "{quantity}"')
+        response = cursor.fetchall()
+        return response
+
+    
     data = getData()
     _product = []
-    _quantity = []
 
     for i in range(len(data)):
         _product.append(data[i][1])
-        _quantity.append(data[i][2])  
-
 
     while True:
         product = input("Produto: ")
@@ -79,15 +82,24 @@ if __name__ == "__main__":
         if format_product not in _product:
             print(f"{product} não existe no estoque, tente registrar a saída novamente! \n")
             continue
-        
-        sql_update = (
-            f'UPDATE {TABLE_NAME} '
-            f'SET quantity = (quantity - {output_quantity} )'
-            f'WHERE product = "{format_product}"'
-        )
 
-        cursor.execute(sql_update)
-        connection.commit()
+        quantity = verifyQuantity(product)
+
+        if quantity[0][0] == 0:
+            print(f"Produto em falta no estoque!")
+            continue
+
+        if output_quantity > quantity[0][0]:
+            print("Quantidade indisponível em estoque! \n")
+        else:
+            sql_update = (
+                f'UPDATE {TABLE_NAME} '
+                f'SET quantity = (quantity - {output_quantity} )'
+                f'WHERE product = "{format_product}"'
+            )
+
+            cursor.execute(sql_update)
+            connection.commit()
 
         resp = input("Deseja registar mais itens de saída [S/N]?")
 
